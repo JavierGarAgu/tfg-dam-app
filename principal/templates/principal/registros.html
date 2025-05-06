@@ -1,0 +1,13 @@
+<h2>Mis Registros</h2>
+<a href="{% url 'logout' %}">Cerrar sesión</a>
+<ul>
+    {% for registro in registros %}
+        <li>
+            {{ registro.tipo_registro }} - {{ registro.kilometraje }} km - {{ registro.precio }} € - {{ registro.fecha }}<br>
+            Detalles: {{ registro.detalles }}
+        </li>
+    {% empty %}
+        <li>No hay registros.</li>
+    {% endfor %}
+</ul>
+

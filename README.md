@@ -37,6 +37,25 @@ python manage.py runserver
 
 ![](imagenes/inicio1.png)
 
+conector django a postgreSQL
 
+```bash
+pip install psycopg2-binary
+```
+
+
+activamos migraciones
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+creamos superusuario
+
+```bash
+python manage.py createsuperuser
+
+```
 
 

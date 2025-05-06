@@ -1,7 +1,24 @@
 levantar docker
 
 ```bash
-docker-compose up -d
+docker-compose up --force-recreate
 ```
 
-docker
+tumbarlo
+
+```bash
+docker-compose down -v
+```
+
+meterse en su bd
+
+```bash
+docker exec -it django_postgres_db psql -U admin -d usuarios_db
+```
+
+ver tablas
+
+```bash
+\d usuarios
+```
+

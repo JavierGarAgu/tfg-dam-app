@@ -17,6 +17,12 @@ CREATE TABLE usuarios (
     -- El resto de los campos ya definidos en el modelo de Django
     CONSTRAINT email_check CHECK (email IS NULL OR email != '')
 );
+-- Crear tabla de sesiones (django_session)
+CREATE TABLE django_session (
+    session_key VARCHAR(40) PRIMARY KEY,          -- Clave única de la sesión (identificador de la sesión)
+    session_data TEXT NOT NULL,                   -- Datos serializados de la sesión
+    expire_date TIMESTAMP NOT NULL               -- Fecha de expiración de la sesión
+);
 
 -- Crear tabla de datos
 CREATE TABLE datos (

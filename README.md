@@ -29,12 +29,6 @@ creamos estructura básica de django
 django-admin startproject app .
 ```
 
-arrancamos para ver que funcione
-
-```bash
-python manage.py runserver
-```
-
 ![](imagenes/inicio1.png)
 
 conector django a postgreSQL
@@ -47,15 +41,12 @@ pip install psycopg2-binary
 activamos migraciones
 
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+python manage.py makemigrations principal
 ```
 
-creamos superusuario
+arrancamos para ver que funcione
 
 ```bash
-python manage.py createsuperuser
-
+python manage.py runserver
 ```
-
 

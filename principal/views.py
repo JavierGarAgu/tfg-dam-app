@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Registro, Usuario
-from django.contrib.auth.hashers import check_password  # Necesario para verificar passwords cifradas
 
 # Vista para el inicio de sesión
 def login_view(request):
@@ -11,23 +10,24 @@ def login_view(request):
         usuario = request.POST.get('usuario')
         password = request.POST.get('password')
 
-        # Agregar una línea de depuració
+        # Agregar una línea de depuración
         print(f"Usuario ingresado: {usuario}, password ingresada: {password}")
         
-        # Verificar si el usuario existe en la base de datos
         try:
+            # Buscar al usuario por su nombre
             user = Usuario.objects.get(usuario=usuario)
             
-            # Verificar si la password es correcta (ahora usando check_password)
-            if check_password(password, user.password):  # Comparación de passwords cifradas
+            # Comparar la contraseña en texto plano directamente
+            if user.password == password:  # Comparación de contraseñas en texto plano
                 # Si la autenticación es exitosa, iniciar sesión
                 request.session['usuario_id'] = user.id
                 return redirect('registros')  # Redirigir a la página de registros
             else:
-                # Si la password es incorrecta, mostrar un error
+                # Contraseña incorrecta
                 return render(request, 'principal/login.html', {'error': 'Usuario o password incorrectos'})
+        
         except Usuario.DoesNotExist:
-            # Si el usuario no existe, mostrar un error
+            # Usuario no encontrado
             return render(request, 'principal/login.html', {'error': 'Usuario o password incorrectos'})
     
     return render(request, 'principal/login.html')

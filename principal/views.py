@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Registro, Usuario
+from django.contrib.auth import authenticate
 
 # Vista para el inicio de sesión
 def login_view(request):
@@ -21,7 +22,10 @@ def login_view(request):
             if user.password == password:  # Comparación de contraseñas en texto plano
                 # Si la autenticación es exitosa, iniciar sesión
                 request.session['usuario_id'] = user.id
-                return redirect('registros')  # Redirigir a la página de registros
+
+                # Si el parámetro 'next' está en la URL, redirigir a esa URL después del login
+                next_url = request.GET.get('next', 'registros')  # Si no hay 'next', redirigir a 'registros'
+                return redirect(next_url)
             else:
                 # Contraseña incorrecta
                 return render(request, 'principal/login.html', {'error': 'Usuario o password incorrectos'})

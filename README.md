@@ -52,3 +52,4 @@ python manage.py runserver
 
 NEXT TODO ARREGLAR http://127.0.0.1:8000/login/?next=/registros/ meter los registros y eso
 
+

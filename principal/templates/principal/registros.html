@@ -1,13 +1,242 @@
-<h2>Mis Registros</h2>
-<a href="{% url 'logout' %}">Cerrar sesión</a>
-<ul>
-    {% for registro in registros %}
-        <li>
-            {{ registro.tipo_registro }} - {{ registro.kilometraje }} km - {{ registro.precio }} € - {{ registro.fecha }}<br>
-            Detalles: {{ registro.detalles }}
-        </li>
-    {% empty %}
-        <li>No hay registros.</li>
-    {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Registros</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f9;
+            color: #333;
+            padding: 2rem;
+            margin: 0;
+        }
 
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        .logout {
+            display: block;
+            text-align: right;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        ul.registro-lista {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        ul.registro-lista li {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        ul.registro-lista li:hover {
+            transform: scale(1.02);
+        }
+
+        .registro-tipo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .registro-info {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .no-registros {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        .edit-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            color: #2980b9;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .edit-icon:hover {
+            color: #1f6391;
+        }
+
+        /* Estilos para los campos editables */
+        .editable {
+            width: 100%; /* Eliminar los márgenes y hacer los campos más amplios */
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            display: none; /* Ocultar inicialmente */
+            box-sizing: border-box; /* Asegura que el padding no haga que se desborde */
+            outline: none; /* Eliminar el contorno cuando está en foco */
+        }
+
+        /* Mostrar como bloque los campos editables cuando se edita */
+        .editable-block {
+            display: block; /* Hacer que cada campo editable sea un bloque */
+            margin-bottom: 1rem;
+        }
+
+        /* Botones de guardar y descartar */
+        .buttons-container {
+            display: none; /* Ocultar inicialmente */
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .btn-guardar {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-guardar:hover {
+            background-color: #2ecc71;
+        }
+
+        .btn-descartar {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-descartar:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <h2>Mis Registros</h2>
+    <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
+
+    <ul class="registro-lista">
+        {% for registro in registros %}
+            <li>
+                <div class="registro-tipo">
+                    <!-- Campo de tipo de registro visible por defecto -->
+                    <span>{{ registro.tipo_registro }}</span>
+                </div>
+                <div class="registro-info">
+                    <!-- Campos visibles por defecto -->
+                    Kilometraje: <span>{{ registro.kilometraje }} km</span><br>
+                    Precio: <span>{{ registro.precio }} €</span><br>
+                    Fecha: <span>{{ registro.fecha }}</span><br>
+                    Detalles: <span>{{ registro.detalles }}</span>
+                </div>
+                
+                <!-- Icono de lápiz para editar -->
+                <i class="fas fa-pencil-alt edit-icon" title="Editar registro" onclick="editarRegistro(this)"></i>
+                
+                <!-- Campos editables que están ocultos inicialmente -->
+                <div class="editable editable-block">
+                    <input type="text" value="{{ registro.tipo_registro }}" class="editable">
+                </div>
+                <div class="editable editable-block">
+                    <input type="number" value="{{ registro.kilometraje }}" class="editable">
+                </div>
+                <div class="editable editable-block">
+                    <input type="decimal" value="{{ registro.precio }}" class="editable">
+                </div>
+                <div class="editable editable-block">
+                    <input type="date" value="{{ registro.fecha }}" class="editable">
+                </div>
+                <div class="editable editable-block">
+                    <textarea class="editable">{{ registro.detalles }}</textarea>
+                </div>
+
+                <!-- Botones de guardar y descartar, ocultos inicialmente -->
+                <div class="buttons-container">
+                    <button class="btn-guardar" onclick="guardarRegistro(this)">Guardar</button>
+                    <button class="btn-descartar" onclick="descartarRegistro(this)">Descartar</button>
+                </div>
+            </li>
+        {% empty %}
+            <li class="no-registros">No hay registros disponibles.</li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        // Función para mostrar los campos editables y los botones
+        function editarRegistro(icono) {
+            var li = icono.closest('li');
+            // Mostrar los campos editables y los botones
+            var camposEditables = li.querySelectorAll('.editable');
+            camposEditables.forEach(function(campo) {
+                campo.style.display = 'block'; // Mostrar cada campo editable
+            });
+            li.querySelector('.buttons-container').style.display = 'flex';
+            // Ocultar la información original
+            li.querySelector('.registro-tipo').style.display = 'none'; 
+            li.querySelector('.registro-info').style.display = 'none'; 
+            // Ocultar el icono de lápiz
+            icono.style.display = 'none';
+        }
+
+        // Función para guardar el registro (sin funcionalidad por ahora)
+        function guardarRegistro(button) {
+            var li = button.closest('li');
+            alert("Registro guardado (sin funcionalidad real por ahora)");
+            // Aquí puedes agregar la lógica para guardar los cambios
+        }
+
+        // Función para descartar cambios
+        function descartarRegistro(button) {
+            var li = button.closest('li');
+            // Ocultar los campos editables y los botones
+            var camposEditables = li.querySelectorAll('.editable');
+            camposEditables.forEach(function(campo) {
+                campo.style.display = 'none'; // Ocultar cada campo editable
+            });
+            li.querySelector('.buttons-container').style.display = 'none';
+            // Volver a mostrar la información original
+            li.querySelector('.registro-tipo').style.display = 'block'; 
+            li.querySelector('.registro-info').style.display = 'block'; 
+            // Volver a mostrar el icono de lápiz
+            li.querySelector('.edit-icon').style.display = 'block';
+        }
+
+        // Simulación de hacer clic en el lápiz y luego en descartar para ocultar los campos al inicio
+        document.addEventListener("DOMContentLoaded", function() {
+            var registros = document.querySelectorAll("ul.registro-lista li");
+            registros.forEach(function(registro) {
+                var editIcon = registro.querySelector(".edit-icon");
+                var descartarBtn = registro.querySelector(".btn-descartar");
+                // Simulamos el clic en el lápiz y luego en descartar
+                editarRegistro(editIcon); // Abrir edición
+                descartarRegistro(descartarBtn); // Luego descartar para ocultar campos
+            });
+        });
+    </script>
+</body>
+</html>

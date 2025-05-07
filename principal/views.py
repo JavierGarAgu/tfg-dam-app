@@ -2,8 +2,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import Registro, Usuario  # Asegúrate de que Usuario es un modelo compatible con auth
+from .forms import RegistroUsuarioForm
 
 # Vista para el inicio de sesión
+def registro_view(request):
+    if request.method == 'POST':
+        form = RegistroUsuarioForm(request.POST)
+        if form.is_valid():
+            usuario = form.save()
+            login(request, usuario)
+            return redirect('registros')  # Redirige a la vista de registros después del login
+    else:
+        form = RegistroUsuarioForm()
+    return render(request, 'principal/registro.html', {'form': form})
+
 def login_view(request):
     if request.method == 'POST':
         usuario = request.POST.get('usuario')

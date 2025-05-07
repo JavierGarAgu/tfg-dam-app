@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
+    <title>Registro de Usuario</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,7 +14,7 @@
             margin: 0;
         }
 
-        .login-container {
+        .registro-container {
             background: #fff;
             padding: 2rem 2.5rem;
             border-radius: 10px;
@@ -37,6 +37,7 @@
         }
 
         input[type="text"],
+        input[type="email"],
         input[type="password"] {
             width: 100%;
             padding: 0.6rem;
@@ -69,47 +70,70 @@
             background-color: #1f6391;
         }
 
-        .error-message {
-            color: #e74c3c;
+        .login-link {
             text-align: center;
             margin-top: 1rem;
         }
 
-        .registro-link {
-            text-align: center;
-            margin-top: 1.2rem;
-        }
-
-        .registro-link a {
+        .login-link a {
             color: #2980b9;
             text-decoration: none;
-            font-weight: 600;
         }
 
-        .registro-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form method="POST">
+    <div class="registro-container">
+        <h2>Crear Cuenta</h2>
+        <form method="POST" novalidate>
             {% csrf_token %}
-            <label for="usuario">Usuario</label>
-            <input type="text" name="usuario" id="usuario" required>
 
-            <label for="password">Contraseña</label>
-            <input type="password" name="password" id="password" required>
+            <div>
+                {{ form.usuario.label_tag }}
+                {{ form.usuario }}
+                {% if form.usuario.errors %}
+                    <div class="error-message">{{ form.usuario.errors.0 }}</div>
+                {% endif %}
+            </div>
 
-            <button type="submit">Entrar</button>
+            <div>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
 
-            {% if error %}
-                <div class="error-message">{{ error }}</div>
-            {% endif %}
+            <div>
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="error-message">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="error-message">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Registrarse</button>
         </form>
-        <div class="registro-link">
-            ¿No tienes una cuenta? <a href="{% url 'registro' %}">Regístrate aquí</a>
+        <div class="login-link">
+            ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
         </div>
     </div>
 </body>

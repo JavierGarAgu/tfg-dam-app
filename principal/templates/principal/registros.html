@@ -19,13 +19,54 @@
             margin-bottom: 2rem;
         }
 
-        .logout {
-            display: block;
-            text-align: right;
-            margin-bottom: 1.5rem;
+        .menu {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: #2980b9;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px;
+        }
+
+        .menu a {
+            color: white;
             text-decoration: none;
-            color: #e74c3c;
+            display: block;
+            padding: 0.5rem;
             font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu a:hover {
+            background-color: #1f6391;
+            border-radius: 4px;
+        }
+
+        .coche-info {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #2ecc71;
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            color: white;
+            width: 250px;
+        }
+
+        .coche-info h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .coche-info p {
+            margin: 0.4rem 0;
+            font-size: 0.95rem;
         }
 
         ul.registro-lista {
@@ -67,9 +108,9 @@
             color: #7f8c8d;
         }
 
-        .edit-icon {
+        .edit-icon,
+        .delete-icon {
             position: absolute;
-            top: 1.5rem;
             right: 1.5rem;
             font-size: 1.5rem;
             color: #2980b9;
@@ -77,7 +118,16 @@
             transition: color 0.3s;
         }
 
-        .edit-icon:hover {
+        .edit-icon {
+            top: 1.5rem;
+        }
+
+        .delete-icon {
+            top: 4.2rem;
+        }
+
+        .edit-icon:hover,
+        .delete-icon:hover {
             color: #1f6391;
         }
 
@@ -137,11 +187,63 @@
             font-size: 0.9rem;
             display: none;
         }
+
+        #confirmationModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #confirmationModal .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+
+        #confirmationModal .modal-content button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #confirmationModal .modal-content .btn-confirm {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #confirmationModal .modal-content .btn-cancel {
+            background-color: #2ecc71;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <div class="menu">
+        <a href="{% url 'info_coche' %}">Editar información de tu coche</a>
+        <a href="{% url 'nuevo_registro' %}">Añadir nuevo registro</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+
+    <div class="coche-info">
+        <h3>Mi Coche</h3>
+        <p><strong>Marca:</strong> {{ coche.marca }}</p>
+        <p><strong>Modelo:</strong> {{ coche.modelo }}</p>
+        <p><strong>Año:</strong> {{ coche.año }}</p>
+        <p><strong>Motor:</strong> {{ coche.motor }}</p>
+        <p><strong>Combustible:</strong> {{ coche.combustible }}</p>
+    </div>
+
     <h2>Mis Registros</h2>
-    <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
 
     <ul class="registro-lista">
         {% for registro in registros %}
@@ -157,6 +259,7 @@
                 </div>
 
                 <i class="fas fa-pencil-alt edit-icon" title="Editar registro" onclick="editarRegistro(this)"></i>
+                <i class="fas fa-trash-alt delete-icon" title="Eliminar registro" onclick="confirmarEliminacion({{ registro.id }})"></i>
 
                 <form method="POST" action="{% url 'actualizar_registro' %}" onsubmit="return validarPrecio(this)">
                     {% csrf_token %}
@@ -197,7 +300,43 @@
         {% endfor %}
     </ul>
 
+    <div id="confirmationModal">
+        <div class="modal-content">
+            <p>¿Estás seguro de que deseas eliminar este registro?</p>
+            <button class="btn-confirm" onclick="eliminarRegistro()">Sí, eliminar</button>
+            <button class="btn-cancel" onclick="cerrarModal()">No, cancelar</button>
+        </div>
+    </div>
+
     <script>
+        let registroIdAEliminar = null;
+
+        window.onload = function() {
+            var editarIconos = document.querySelectorAll('.edit-icon');
+            editarIconos.forEach(function(icono) {
+                icono.click();
+                var botonDescartar = icono.closest('li').querySelector('.btn-descartar');
+                if (botonDescartar) {
+                    botonDescartar.click();
+                }
+            });
+        }
+
+        function confirmarEliminacion(id) {
+            registroIdAEliminar = id;
+            document.getElementById('confirmationModal').style.display = 'flex';
+        }
+
+        function eliminarRegistro() {
+            if (registroIdAEliminar !== null) {
+                window.location.href = `/eliminar_registro/${registroIdAEliminar}/`;
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
         function editarRegistro(icono) {
             var li = icono.closest('li');
             var camposEditables = li.querySelectorAll('.editable');
@@ -208,6 +347,8 @@
             li.querySelector('.registro-tipo').style.display = 'none';
             li.querySelector('.registro-info').style.display = 'none';
             icono.style.display = 'none';
+            var trashIcon = li.querySelector('.delete-icon');
+            if (trashIcon) trashIcon.style.display = 'none';
         }
 
         function descartarRegistro(button) {
@@ -220,6 +361,8 @@
             li.querySelector('.registro-tipo').style.display = 'block';
             li.querySelector('.registro-info').style.display = 'block';
             li.querySelector('.edit-icon').style.display = 'block';
+            var trashIcon = li.querySelector('.delete-icon');
+            if (trashIcon) trashIcon.style.display = 'block';
             li.querySelector('.error').style.display = 'none';
         }
 
@@ -238,19 +381,6 @@
             errorMsg.style.display = 'none';
             return true;
         }
-
-        // EJECUTA AUTOMÁTICAMENTE EL EDITAR + DESCARTAR AL CARGAR
-        document.addEventListener('DOMContentLoaded', function () {
-            const registros = document.querySelectorAll('li');
-            registros.forEach(function (li) {
-                const icono = li.querySelector('.edit-icon');
-                const descartar = li.querySelector('.btn-descartar');
-                if (icono && descartar) {
-                    editarRegistro(icono);
-                    descartarRegistro(descartar);
-                }
-            });
-        });
     </script>
 </body>
 </html>

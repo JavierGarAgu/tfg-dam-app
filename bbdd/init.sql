@@ -36,6 +36,36 @@ CREATE TABLE datos (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- Crear tabla de coches
+CREATE TABLE coches (
+    id SERIAL PRIMARY KEY,
+    marca VARCHAR(50) NOT NULL,
+    modelo VARCHAR(100) NOT NULL,
+    año INT CHECK (año BETWEEN 1900 AND 2025),
+    motor VARCHAR(100),
+    combustible VARCHAR(10) CHECK (combustible IN ('gasolina', 'diesel')),
+    usuario_id INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    
+    -- Validación básica para marcas populares (puedes omitir o ampliar esto según motor)
+    CHECK (marca IN (
+        'Toyota', 'Ford', 'Volkswagen', 'Honda', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz', 'Audi',
+        'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Fiat', 'Skoda', 'SEAT', 'Mazda', 'Subaru', 'Mitsubishi',
+        'Tesla', 'Volvo', 'Jeep', 'Dodge', 'Ram', 'Chrysler', 'Buick', 'Cadillac', 'Lincoln', 'GMC',
+        'Land Rover', 'Jaguar', 'Alfa Romeo', 'Maserati', 'Ferrari', 'Lamborghini', 'Porsche',
+        'Aston Martin', 'Bentley', 'Rolls-Royce', 'Bugatti', 'McLaren', 'Lotus', 'Mini', 'Smart',
+        'Citroën', 'DS Automobiles', 'Genesis', 'Infiniti', 'Acura', 'Daihatsu', 'Proton', 'Perodua',
+        'Geely', 'Chery', 'BYD', 'NIO', 'Xpeng', 'Li Auto', 'Great Wall Motors', 'Haval', 'BAIC',
+        'FAW', 'Hongqi', 'Roewe', 'MG (Morris Garages)', 'Lancia', 'Dacia', 'Tata Motors', 'Mahindra',
+        'Maruti Suzuki', 'Scion', 'Pontiac', 'Saturn', 'Hummer', 'Daewoo', 'Oldsmobile', 'Isuzu',
+        'Suzuki', 'Yugo', 'Zastava', 'Koenigsegg', 'Rimac', 'Fisker', 'Lucid Motors', 'Polestar',
+        'Rivian', 'Ariel', 'Pagani', 'Spyker', 'Noble', 'De Tomaso', 'Saleen', 'Pininfarina',
+        'SSC North America', 'Gumpert', 'Aptera', 'Bollinger Motors', 'Canoo', 'VinFast', 'Zenos',
+        'Faraday Future', 'Rezvani', 'W Motors', 'TVR', 'Brilliance Auto', 'Luxgen', 'Togg',
+        'Donkervoort', 'Hispano Suiza', 'Ginetta'
+    ))
+);
+
 -- Insertar usuarios de prueba con contraseñas hasheadas
 INSERT INTO usuarios (usuario, password, is_active, is_staff, is_superuser, email) VALUES
 ('juan', 'pbkdf2_sha256$1000000$tPElqMILDAAjL5e8boLnGe$e3K/g85W217Af31g9lwWvRHXr0vvDDOfd1+ZyBSlHno=', TRUE, FALSE, FALSE, 'juan@correo.com'),
@@ -52,3 +82,11 @@ INSERT INTO datos (tipo_registro, kilometraje, precio, fecha, detalles, usuario_
 ('mantenimiento', 10000, 180.00, '2024-11-05', 'Revisión general', 2),
 ('averia', 11000, 320.00, '2025-02-10', 'Problema en la caja de cambios', 2),
 ('consumo', 11500, 55.00, '2025-03-01', 'Repostaje en autopista', 2);
+
+-- Insertar coche para Juan (usuario_id = 1)
+INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES
+('Toyota', 'Corolla', 2020, '1.8L Híbrido', 'gasolina', 1);
+
+-- Insertar coche para Maria (usuario_id = 2)
+INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES
+('Volkswagen', 'Golf', 2019, '2.0 TDI', 'diesel', 2);

@@ -67,3 +67,58 @@ class Registro(models.Model):
 
     def __str__(self):
         return f"Registro(id={self.id}, tipo='{self.tipo_registro}', km={self.kilometraje}, usuario='{self.usuario.usuario}')"
+# ------------------------
+# 3. Coche
+# ------------------------
+
+class Coche(models.Model):
+    COMBUSTIBLE_CHOICES = [
+        ('gasolina', 'Gasolina'),
+        ('diesel', 'Diésel'),
+    ]
+
+    MARCAS_CHOICES = [
+        ('Toyota', 'Toyota'), ('Ford', 'Ford'), ('Volkswagen', 'Volkswagen'), ('Honda', 'Honda'),
+        ('Chevrolet', 'Chevrolet'), ('Nissan', 'Nissan'), ('BMW', 'BMW'), ('Mercedes-Benz', 'Mercedes-Benz'),
+        ('Audi', 'Audi'), ('Hyundai', 'Hyundai'), ('Kia', 'Kia'), ('Peugeot', 'Peugeot'),
+        ('Renault', 'Renault'), ('Fiat', 'Fiat'), ('Skoda', 'Skoda'), ('SEAT', 'SEAT'),
+        ('Mazda', 'Mazda'), ('Subaru', 'Subaru'), ('Mitsubishi', 'Mitsubishi'), ('Tesla', 'Tesla'),
+        ('Volvo', 'Volvo'), ('Jeep', 'Jeep'), ('Dodge', 'Dodge'), ('Ram', 'Ram'),
+        ('Chrysler', 'Chrysler'), ('Buick', 'Buick'), ('Cadillac', 'Cadillac'), ('Lincoln', 'Lincoln'),
+        ('GMC', 'GMC'), ('Land Rover', 'Land Rover'), ('Jaguar', 'Jaguar'), ('Alfa Romeo', 'Alfa Romeo'),
+        ('Maserati', 'Maserati'), ('Ferrari', 'Ferrari'), ('Lamborghini', 'Lamborghini'), ('Porsche', 'Porsche'),
+        ('Aston Martin', 'Aston Martin'), ('Bentley', 'Bentley'), ('Rolls-Royce', 'Rolls-Royce'), ('Bugatti', 'Bugatti'),
+        ('McLaren', 'McLaren'), ('Lotus', 'Lotus'), ('Mini', 'Mini'), ('Smart', 'Smart'),
+        ('Citroën', 'Citroën'), ('DS Automobiles', 'DS Automobiles'), ('Genesis', 'Genesis'),
+        ('Infiniti', 'Infiniti'), ('Acura', 'Acura'), ('Daihatsu', 'Daihatsu'), ('Proton', 'Proton'),
+        ('Perodua', 'Perodua'), ('Geely', 'Geely'), ('Chery', 'Chery'), ('BYD', 'BYD'),
+        ('NIO', 'NIO'), ('Xpeng', 'Xpeng'), ('Li Auto', 'Li Auto'), ('Great Wall Motors', 'Great Wall Motors'),
+        ('Haval', 'Haval'), ('BAIC', 'BAIC'), ('FAW', 'FAW'), ('Hongqi', 'Hongqi'),
+        ('Roewe', 'Roewe'), ('MG (Morris Garages)', 'MG (Morris Garages)'), ('Lancia', 'Lancia'),
+        ('Dacia', 'Dacia'), ('Tata Motors', 'Tata Motors'), ('Mahindra', 'Mahindra'),
+        ('Maruti Suzuki', 'Maruti Suzuki'), ('Scion', 'Scion'), ('Pontiac', 'Pontiac'),
+        ('Saturn', 'Saturn'), ('Hummer', 'Hummer'), ('Daewoo', 'Daewoo'), ('Oldsmobile', 'Oldsmobile'),
+        ('Isuzu', 'Isuzu'), ('Suzuki', 'Suzuki'), ('Yugo', 'Yugo'), ('Zastava', 'Zastava'),
+        ('Koenigsegg', 'Koenigsegg'), ('Rimac', 'Rimac'), ('Fisker', 'Fisker'), ('Lucid Motors', 'Lucid Motors'),
+        ('Polestar', 'Polestar'), ('Rivian', 'Rivian'), ('Ariel', 'Ariel'), ('Pagani', 'Pagani'),
+        ('Spyker', 'Spyker'), ('Noble', 'Noble'), ('De Tomaso', 'De Tomaso'), ('Saleen', 'Saleen'),
+        ('Pininfarina', 'Pininfarina'), ('SSC North America', 'SSC North America'), ('Gumpert', 'Gumpert'),
+        ('Aptera', 'Aptera'), ('Bollinger Motors', 'Bollinger Motors'), ('Canoo', 'Canoo'),
+        ('VinFast', 'VinFast'), ('Zenos', 'Zenos'), ('Faraday Future', 'Faraday Future'),
+        ('Rezvani', 'Rezvani'), ('W Motors', 'W Motors'), ('TVR', 'TVR'), ('Brilliance Auto', 'Brilliance Auto'),
+        ('Luxgen', 'Luxgen'), ('Togg', 'Togg'), ('Donkervoort', 'Donkervoort'),
+        ('Hispano Suiza', 'Hispano Suiza'), ('Ginetta', 'Ginetta')
+    ]
+
+    marca = models.CharField(max_length=50, choices=MARCAS_CHOICES)
+    modelo = models.CharField(max_length=100)
+    año = models.PositiveIntegerField()
+    motor = models.CharField(max_length=100)
+    combustible = models.CharField(max_length=10, choices=COMBUSTIBLE_CHOICES)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, db_column='usuario_id')
+
+    class Meta:
+        db_table = 'coches'
+
+    def __str__(self):
+        return f"Coche({self.marca} {self.modelo}, {self.año}) de {self.usuario.usuario}"

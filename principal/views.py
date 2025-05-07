@@ -1,21 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import Registro, Usuario  # Asegúrate de que Usuario es un modelo compatible con auth
-from .forms import RegistroUsuarioForm
+from .models import Registro, Usuario, Coche  # Asegúrate de que Usuario es un modelo compatible con auth
+from .forms import SignupUsuarioForm
 from django.contrib import messages
 
 # Vista para el inicio de sesión
-def registro_view(request):
+def signup_view(request):
     if request.method == 'POST':
-        form = RegistroUsuarioForm(request.POST)
+        form = SignupUsuarioForm(request.POST)
         if form.is_valid():
             usuario = form.save()
             login(request, usuario)
             return redirect('registros')  # Redirige a la vista de registros después del login
     else:
-        form = RegistroUsuarioForm()
-    return render(request, 'principal/registro.html', {'form': form})
+        form = SignupUsuarioForm()
+    return render(request, 'principal/signup.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -43,8 +43,13 @@ def login_view(request):
 # Vista para ver los registros del usuario autenticado
 @login_required
 def registros_view(request):
+    coche = Coche.objects.get(usuario=request.user)
+    
+    # Obtener los registros del usuario autenticado
     registros = Registro.objects.filter(usuario=request.user).order_by('-fecha')
-    return render(request, 'principal/registros.html', {'registros': registros})
+    
+    # Pasar tanto los registros como el coche al template
+    return render(request, 'principal/registros.html', {'registros': registros, 'coche': coche})
 
 
 # Vista para cerrar sesión
@@ -52,6 +57,14 @@ def registros_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def info_coche(request):
+    return redirect('registros')
+
+@login_required
+def nuevo_registro(request):
+    return redirect('nuevo_registro')
 
 @login_required
 def actualizar_registro(request):
@@ -83,3 +96,13 @@ def actualizar_registro(request):
             return redirect('registros')
 
     return redirect('registros')  # Redirigir si no es POST
+
+@login_required
+def eliminar_registro(request, id):
+    try:
+        registro = Registro.objects.get(id=id, usuario=request.user)
+        registro.delete()
+        messages.success(request, "Registro eliminado correctamente.")
+    except Registro.DoesNotExist:
+        messages.error(request, "No se encontró el registro.")
+    return redirect('registros')

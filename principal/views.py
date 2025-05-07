@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import Registro, Usuario  # Asegúrate de que Usuario es un modelo compatible con auth
 from .forms import RegistroUsuarioForm
+from django.contrib import messages
 
 # Vista para el inicio de sesión
 def registro_view(request):
@@ -42,7 +43,7 @@ def login_view(request):
 # Vista para ver los registros del usuario autenticado
 @login_required
 def registros_view(request):
-    registros = Registro.objects.filter(usuario=request.user)
+    registros = Registro.objects.filter(usuario=request.user).order_by('-fecha')
     return render(request, 'principal/registros.html', {'registros': registros})
 
 
@@ -51,3 +52,34 @@ def registros_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def actualizar_registro(request):
+    if request.method == 'POST':
+        registro_id = request.POST.get('id')
+        try:
+            registro = Registro.objects.get(id=registro_id, usuario=request.user)
+            # Actualizamos los campos del registro
+            registro.tipo_registro = request.POST.get('tipo_registro')
+            registro.kilometraje = int(request.POST.get('kilometraje'))
+            precio_str = request.POST.get('precio')
+            # Reemplaza la coma por un punto para poder convertir a float
+            precio_str = precio_str.replace(',', '.')
+            # Ahora convierte a float
+            precio = float(precio_str)
+            registro.precio = precio
+            registro.fecha = request.POST.get('fecha')
+            registro.detalles = request.POST.get('detalles')
+
+
+            # Guardamos el registro actualizado
+            registro.save()
+
+            # Mostrar mensaje de éxito
+            messages.success(request, "Registro actualizado exitosamente.")
+            return redirect('registros')  # Redirigir de nuevo a la página de registros
+        except Registro.DoesNotExist:
+            messages.error(request, "No se encontró el registro.")
+            return redirect('registros')
+
+    return redirect('registros')  # Redirigir si no es POST

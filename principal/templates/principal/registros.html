@@ -81,28 +81,25 @@
             color: #1f6391;
         }
 
-        /* Estilos para los campos editables */
         .editable {
-            width: 100%; /* Eliminar los márgenes y hacer los campos más amplios */
+            width: 100%;
             padding: 0.6rem;
             margin-bottom: 1rem;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 1rem;
-            display: none; /* Ocultar inicialmente */
-            box-sizing: border-box; /* Asegura que el padding no haga que se desborde */
-            outline: none; /* Eliminar el contorno cuando está en foco */
+            display: none;
+            box-sizing: border-box;
+            outline: none;
         }
 
-        /* Mostrar como bloque los campos editables cuando se edita */
         .editable-block {
-            display: block; /* Hacer que cada campo editable sea un bloque */
+            display: block;
             margin-bottom: 1rem;
         }
 
-        /* Botones de guardar y descartar */
         .buttons-container {
-            display: none; /* Ocultar inicialmente */
+            display: none;
             justify-content: space-between;
             margin-top: 1rem;
         }
@@ -134,6 +131,12 @@
         .btn-descartar:hover {
             background-color: #c0392b;
         }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -144,42 +147,50 @@
         {% for registro in registros %}
             <li>
                 <div class="registro-tipo">
-                    <!-- Campo de tipo de registro visible por defecto -->
                     <span>{{ registro.tipo_registro }}</span>
                 </div>
                 <div class="registro-info">
-                    <!-- Campos visibles por defecto -->
                     Kilometraje: <span>{{ registro.kilometraje }} km</span><br>
                     Precio: <span>{{ registro.precio }} €</span><br>
                     Fecha: <span>{{ registro.fecha }}</span><br>
                     Detalles: <span>{{ registro.detalles }}</span>
                 </div>
-                
-                <!-- Icono de lápiz para editar -->
-                <i class="fas fa-pencil-alt edit-icon" title="Editar registro" onclick="editarRegistro(this)"></i>
-                
-                <!-- Campos editables que están ocultos inicialmente -->
-                <div class="editable editable-block">
-                    <input type="text" value="{{ registro.tipo_registro }}" class="editable">
-                </div>
-                <div class="editable editable-block">
-                    <input type="number" value="{{ registro.kilometraje }}" class="editable">
-                </div>
-                <div class="editable editable-block">
-                    <input type="decimal" value="{{ registro.precio }}" class="editable">
-                </div>
-                <div class="editable editable-block">
-                    <input type="date" value="{{ registro.fecha }}" class="editable">
-                </div>
-                <div class="editable editable-block">
-                    <textarea class="editable">{{ registro.detalles }}</textarea>
-                </div>
 
-                <!-- Botones de guardar y descartar, ocultos inicialmente -->
-                <div class="buttons-container">
-                    <button class="btn-guardar" onclick="guardarRegistro(this)">Guardar</button>
-                    <button class="btn-descartar" onclick="descartarRegistro(this)">Descartar</button>
-                </div>
+                <i class="fas fa-pencil-alt edit-icon" title="Editar registro" onclick="editarRegistro(this)"></i>
+
+                <form method="POST" action="{% url 'actualizar_registro' %}" onsubmit="return validarPrecio(this)">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ registro.id }}">
+
+                    <div class="editable editable-block">
+                        <select name="tipo_registro" class="editable">
+                            <option value="mantenimiento" {% if registro.tipo_registro == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                            <option value="averia" {% if registro.tipo_registro == 'averia' %}selected{% endif %}>Avería</option>
+                            <option value="consumo" {% if registro.tipo_registro == 'consumo' %}selected{% endif %}>Consumo</option>
+                        </select>
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="number" name="kilometraje" value="{{ registro.kilometraje }}" class="editable">
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="text" name="precio" value="{{ registro.precio }}" class="editable" pattern="^\d+([,]\d{1,2})?$" title="Introduce un número decimal válido (por ejemplo: 123.45 o 123,45)">
+                        <div class="error">Introduce un número decimal válido (ej: 123,45)</div>
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="date" name="fecha" value="{{ registro.fecha|date:'Y-m-d' }}" class="editable">
+                    </div>
+                    <div class="editable editable-block">
+                        <textarea name="detalles" class="editable">{{ registro.detalles }}</textarea>
+                    </div>
+
+                    <div class="buttons-container">
+                        <button type="submit" class="btn-guardar">Guardar</button>
+                        <button type="button" class="btn-descartar" onclick="descartarRegistro(this)">Descartar</button>
+                    </div>
+                </form>
             </li>
         {% empty %}
             <li class="no-registros">No hay registros disponibles.</li>
@@ -187,54 +198,57 @@
     </ul>
 
     <script>
-        // Función para mostrar los campos editables y los botones
         function editarRegistro(icono) {
             var li = icono.closest('li');
-            // Mostrar los campos editables y los botones
             var camposEditables = li.querySelectorAll('.editable');
             camposEditables.forEach(function(campo) {
-                campo.style.display = 'block'; // Mostrar cada campo editable
+                campo.style.display = 'block';
             });
             li.querySelector('.buttons-container').style.display = 'flex';
-            // Ocultar la información original
-            li.querySelector('.registro-tipo').style.display = 'none'; 
-            li.querySelector('.registro-info').style.display = 'none'; 
-            // Ocultar el icono de lápiz
+            li.querySelector('.registro-tipo').style.display = 'none';
+            li.querySelector('.registro-info').style.display = 'none';
             icono.style.display = 'none';
         }
 
-        // Función para guardar el registro (sin funcionalidad por ahora)
-        function guardarRegistro(button) {
-            var li = button.closest('li');
-            alert("Registro guardado (sin funcionalidad real por ahora)");
-            // Aquí puedes agregar la lógica para guardar los cambios
-        }
-
-        // Función para descartar cambios
         function descartarRegistro(button) {
             var li = button.closest('li');
-            // Ocultar los campos editables y los botones
             var camposEditables = li.querySelectorAll('.editable');
             camposEditables.forEach(function(campo) {
-                campo.style.display = 'none'; // Ocultar cada campo editable
+                campo.style.display = 'none';
             });
             li.querySelector('.buttons-container').style.display = 'none';
-            // Volver a mostrar la información original
-            li.querySelector('.registro-tipo').style.display = 'block'; 
-            li.querySelector('.registro-info').style.display = 'block'; 
-            // Volver a mostrar el icono de lápiz
+            li.querySelector('.registro-tipo').style.display = 'block';
+            li.querySelector('.registro-info').style.display = 'block';
             li.querySelector('.edit-icon').style.display = 'block';
+            li.querySelector('.error').style.display = 'none';
         }
 
-        // Simulación de hacer clic en el lápiz y luego en descartar para ocultar los campos al inicio
-        document.addEventListener("DOMContentLoaded", function() {
-            var registros = document.querySelectorAll("ul.registro-lista li");
-            registros.forEach(function(registro) {
-                var editIcon = registro.querySelector(".edit-icon");
-                var descartarBtn = registro.querySelector(".btn-descartar");
-                // Simulamos el clic en el lápiz y luego en descartar
-                editarRegistro(editIcon); // Abrir edición
-                descartarRegistro(descartarBtn); // Luego descartar para ocultar campos
+        function validarPrecio(formulario) {
+            var precioInput = formulario.querySelector('input[name="precio"]');
+            var errorMsg = formulario.querySelector('.error');
+            var valor = precioInput.value.trim();
+            var regex = /^\d+([.,]\d{1,2})?$/;
+
+            if (!regex.test(valor)) {
+                errorMsg.style.display = 'block';
+                precioInput.focus();
+                return false;
+            }
+
+            errorMsg.style.display = 'none';
+            return true;
+        }
+
+        // EJECUTA AUTOMÁTICAMENTE EL EDITAR + DESCARTAR AL CARGAR
+        document.addEventListener('DOMContentLoaded', function () {
+            const registros = document.querySelectorAll('li');
+            registros.forEach(function (li) {
+                const icono = li.querySelector('.edit-icon');
+                const descartar = li.querySelector('.btn-descartar');
+                if (icono && descartar) {
+                    editarRegistro(icono);
+                    descartarRegistro(descartar);
+                }
             });
         });
     </script>

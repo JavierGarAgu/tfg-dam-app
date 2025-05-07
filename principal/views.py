@@ -22,9 +22,11 @@ def login_view(request):
             if user.password == password:  # Comparación de contraseñas en texto plano
                 # Si la autenticación es exitosa, iniciar sesión
                 request.session['usuario_id'] = user.id
+                login(request, user) 
 
                 # Si el parámetro 'next' está en la URL, redirigir a esa URL después del login
                 next_url = request.GET.get('next', 'registros')  # Si no hay 'next', redirigir a 'registros'
+                print(f"ENTRA EN LOGIN: {usuario}, ENTRA EN LOGIN: {password}")
                 return redirect(next_url)
             else:
                 # Contraseña incorrecta

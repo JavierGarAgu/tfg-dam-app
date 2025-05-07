@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Registro, Usuario, Coche  # Asegúrate de que Usuario es un modelo compatible con auth
 from .forms import SignupUsuarioForm
 from django.contrib import messages
+from datetime import datetime
 
 # Vista para el inicio de sesión
 def signup_view(request):
@@ -60,40 +61,73 @@ def logout_view(request):
 
 @login_required
 def info_coche(request):
-    return redirect('registros')
+    if request.method == 'POST':
+        coche_id = request.POST.get('id')
+        try:
+            coche = Coche.objects.get(id=coche_id, usuario=request.user)
 
-@login_required
+            coche.marca = request.POST.get('marca')
+            coche.modelo = request.POST.get('modelo')
+            coche.año = int(request.POST.get('año'))
+            coche.motor = request.POST.get('motor')
+            coche.combustible = request.POST.get('combustible')
+
+            coche.save()
+            messages.success(request, "Coche actualizado exitosamente.")
+            return redirect('info_coche')  # Redirige para evitar reenvío del formulario
+
+        except Coche.DoesNotExist:
+            messages.error(request, "No se encontró el coche.")
+            return redirect('info_coche')
+
+    # Si no es POST, simplemente muestra los coches
+    coches = Coche.objects.filter(usuario=request.user)
+    return render(request, 'principal/info_coche.html', {'coches': coches})
+
+
 def nuevo_registro(request):
-    return redirect('nuevo_registro')
+    if request.method == 'POST':
+        tipo_registro = request.POST.get('tipo_registro')
+        kilometraje = request.POST.get('kilometraje')
+        precio = request.POST.get('precio')
+        fecha = request.POST.get('fecha')
+        detalles = request.POST.get('detalles')
+
+  
+        precio_float = float(precio.replace(',', '.'))  # Convertir ',' a '.' si es necesario
+        nuevo = Registro.objects.create(
+            tipo_registro=tipo_registro,
+            kilometraje=int(kilometraje),
+            precio=precio_float,
+            fecha=datetime.strptime(fecha, '%Y-%m-%d').date(),
+            detalles=detalles,
+            usuario=request.user
+        )
+
+
+    return render(request, 'principal/nuevo_registro.html')
 
 @login_required
 def actualizar_registro(request):
     if request.method == 'POST':
         registro_id = request.POST.get('id')
-        try:
-            registro = Registro.objects.get(id=registro_id, usuario=request.user)
-            # Actualizamos los campos del registro
-            registro.tipo_registro = request.POST.get('tipo_registro')
-            registro.kilometraje = int(request.POST.get('kilometraje'))
-            precio_str = request.POST.get('precio')
-            # Reemplaza la coma por un punto para poder convertir a float
-            precio_str = precio_str.replace(',', '.')
-            # Ahora convierte a float
-            precio = float(precio_str)
-            registro.precio = precio
-            registro.fecha = request.POST.get('fecha')
-            registro.detalles = request.POST.get('detalles')
+
+        registro = Registro.objects.get(id=registro_id, usuario=request.user)
+        # Actualizamos los campos del registro
+        registro.tipo_registro = request.POST.get('tipo_registro')
+        registro.kilometraje = int(request.POST.get('kilometraje'))
+        precio_str = request.POST.get('precio')
+        # Reemplaza la coma por un punto para poder convertir a float
+        precio_str = precio_str.replace(',', '.')
+        # Ahora convierte a float
+        precio = float(precio_str)
+        registro.precio = precio
+        registro.fecha = request.POST.get('fecha')
+        registro.detalles = request.POST.get('detalles')
 
 
-            # Guardamos el registro actualizado
-            registro.save()
-
-            # Mostrar mensaje de éxito
-            messages.success(request, "Registro actualizado exitosamente.")
-            return redirect('registros')  # Redirigir de nuevo a la página de registros
-        except Registro.DoesNotExist:
-            messages.error(request, "No se encontró el registro.")
-            return redirect('registros')
+        # Guardamos el registro actualizado
+        registro.save()
 
     return redirect('registros')  # Redirigir si no es POST
 

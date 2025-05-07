@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tu Coche</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f9;
+            color: #333;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        .menu {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: #2980b9;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu a:hover {
+            background-color: #1f6391;
+            border-radius: 4px;
+        }
+
+        ul.registro-lista {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        ul.registro-lista li {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        ul.registro-lista li:hover {
+            transform: scale(1.02);
+        }
+
+        .registro-tipo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .registro-info {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .no-registros {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        .edit-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 1.5rem;
+            color: #2980b9;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .edit-icon:hover {
+            color: #1f6391;
+        }
+
+        .editable,
+        .editable-block {
+            display: none;
+        }
+
+        .editable-block select,
+        .editable-block input,
+        .editable-block textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .buttons-container {
+            display: none;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .btn-guardar {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-guardar:hover {
+            background-color: #2ecc71;
+        }
+
+        .btn-descartar {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-descartar:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <a href="{% url 'registros' %}">Ver registros</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+
+    <h2>Tu Coche</h2>
+
+    <ul class="registro-lista">
+        {% for coche in coches %}
+            <li>
+                <div class="registro-tipo">
+                    <span>{{ coche.marca }} {{ coche.modelo }}</span>
+                </div>
+                <div class="registro-info">
+                    Año: {{ coche.año }}<br>
+                    Motor: {{ coche.motor }}<br>
+                    Combustible: {{ coche.get_combustible_display }}
+                </div>
+
+                <i class="fas fa-pencil-alt edit-icon" title="Editar coche" onclick="editarRegistro(this)"></i>
+
+                <form method="POST" action="{% url 'info_coche' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ coche.id }}">
+
+                    <div class="editable editable-block">
+                        <select name="marca">
+                            {% for key, val in coche.MARCAS_CHOICES %}
+                                <option value="{{ key }}" {% if coche.marca == key %}selected{% endif %}>{{ val }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="text" name="modelo" value="{{ coche.modelo }}">
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="number" name="año" value="{{ coche.año }}">
+                    </div>
+
+                    <div class="editable editable-block">
+                        <input type="text" name="motor" value="{{ coche.motor }}">
+                    </div>
+
+                    <div class="editable editable-block">
+                        <select name="combustible">
+                            <option value="gasolina" {% if coche.combustible == 'gasolina' %}selected{% endif %}>Gasolina</option>
+                            <option value="diesel" {% if coche.combustible == 'diesel' %}selected{% endif %}>Diésel</option>
+                        </select>
+                    </div>
+
+                    <div class="buttons-container">
+                        <button type="submit" class="btn-guardar">Guardar</button>
+                        <button type="button" class="btn-descartar" onclick="descartarRegistro(this)">Descartar</button>
+                    </div>
+                </form>
+            </li>
+        {% empty %}
+            <li class="no-registros">No tienes coches registrados.</li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function editarRegistro(icono) {
+            const li = icono.closest('li');
+            li.querySelectorAll('.editable-block').forEach(e => e.style.display = 'block');
+            li.querySelector('.buttons-container').style.display = 'flex';
+            li.querySelector('.registro-tipo').style.display = 'none';
+            li.querySelector('.registro-info').style.display = 'none';
+            icono.style.display = 'none';
+        }
+
+        function descartarRegistro(button) {
+            const li = button.closest('li');
+            li.querySelectorAll('.editable-block').forEach(e => e.style.display = 'none');
+            li.querySelector('.buttons-container').style.display = 'none';
+            li.querySelector('.registro-tipo').style.display = 'block';
+            li.querySelector('.registro-info').style.display = 'block';
+            li.querySelector('.edit-icon').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

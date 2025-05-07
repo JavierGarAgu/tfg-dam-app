@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Registro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.7rem;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1f6391;
+        }
+
+        .volver-link {
+            text-align: center;
+            margin-top: 1.2rem;
+        }
+
+        .volver-link a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .volver-link a:hover {
+            text-decoration: underline;
+        }
+
+        .mensaje {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .mensaje.success {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            border: 1px solid #2ecc71;
+        }
+
+        .mensaje.error {
+            color: #e74c3c;
+            background-color: #fdecea;
+            border: 1px solid #e74c3c;
+        }
+
+        .error {
+            color: #e74c3c;
+            display: none;
+            font-size: 0.9rem;
+            margin-top: -1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Nuevo Registro</h2>
+
+        <form method="POST" onsubmit="return validarPrecio(this)">
+            {% csrf_token %}
+
+            <label for="tipo_registro">Tipo de Registro</label>
+            <select name="tipo_registro" id="tipo_registro" required>
+                <option value="">-- Selecciona --</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="averia">Avería</option>
+                <option value="consumo">Consumo</option>
+            </select>
+
+            <label for="kilometraje">Kilometraje</label>
+            <input type="number" name="kilometraje" required>
+
+            <label for="precio">Precio (€)</label>
+            <input type="text" name="precio" required>
+            <div class="error">Por favor, ingresa un precio válido (por ejemplo: 100.50 o 100,50).</div>
+
+            <label for="fecha">Fecha</label>
+            <input type="date" name="fecha" required>
+
+            <label for="detalles">Detalles</label>
+            <textarea name="detalles" rows="4" required></textarea>
+
+            <button type="submit">Guardar Registro</button>
+            
+        </form>
+
+        <div class="volver-link">
+            <a href="{% url 'registros' %}">← Volver a registros</a>
+        </div>
+    </div>
+
+    <script>
+        function validarPrecio(formulario) {
+            var precioInput = formulario.querySelector('input[name="precio"]');
+            var errorMsg = formulario.querySelector('.error');
+            var valor = precioInput.value.trim();
+            var regex = /^\d+([.,]\d{1,2})?$/;
+
+            // Validación del precio
+            if (!regex.test(valor)) {
+                errorMsg.style.display = 'block';
+                precioInput.focus();
+                return false; // Evita el envío del formulario si el precio no es válido
+            }
+
+            // Si el precio es válido
+            errorMsg.style.display = 'none';
+            return true; // Permite que el formulario se envíe
+        }
+    </script>
+</body>
+</html>
+

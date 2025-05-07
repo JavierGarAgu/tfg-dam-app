@@ -6,19 +6,19 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 # ------------------------
 
 class UsuarioManager(BaseUserManager):
-    def create_user(self, usuario, contraseña=None, **extra_fields):
+    def create_user(self, usuario, password=None, **extra_fields):
         if not usuario:
             raise ValueError('El usuario debe tener un nombre')
-        usuario = self.model(usuario=usuario, **extra_fields)
-        if contraseña:
-            usuario.set_password(contraseña)
-        usuario.save(using=self._db)
-        return usuario
+        user = self.model(usuario=usuario, **extra_fields)
+        if password:
+            user.set_password(password)  # Usar el método set_password para hashear la contraseña
+        user.save(using=self._db)
+        return user
 
-    def create_superuser(self, usuario, contraseña=None, **extra_fields):
+    def create_superuser(self, usuario, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(usuario, contraseña, **extra_fields)
+        return self.create_user(usuario, password, **extra_fields)
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     usuario = models.CharField(max_length=50, unique=True)
@@ -27,8 +27,10 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
-    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
-    password = models.CharField(max_length=100)
+    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)  # Email opcional
+
+    # Aquí no es necesario poner un campo "password", ya que AbstractBaseUser ya lo define internamente
+    # El campo 'password' se maneja automáticamente por Django, no es necesario declararlo.
 
     USERNAME_FIELD = 'usuario'
     REQUIRED_FIELDS = ['email']
@@ -40,6 +42,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"Usuario(id={self.id}, usuario='{self.usuario}', email='{self.email}', staff={self.is_staff}, superuser={self.is_superuser}, activo={self.is_active})"
+
 
 # ------------------------
 # 2. Registro

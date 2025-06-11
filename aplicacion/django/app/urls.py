@@ -1,4 +1,6 @@
 from django.urls import path
+from django.urls import re_path
+from django.shortcuts import redirect
 from . import views
 
 urlpatterns = [
@@ -10,5 +12,7 @@ urlpatterns = [
     path('actualizar_registro/', views.actualizar_registro, name='actualizar_registro'),
     path('nuevo_registro/', views.nuevo_registro, name='nuevo_registro'),
     path('info_coche/', views.info_coche, name='info_coche'),
+    re_path(r'^.*$', lambda request: redirect('login')),
 ]
+
 

@@ -8,10 +8,20 @@ from datetime import datetime
 
 # Vista para el inicio de sesión
 def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('registros')  # si ya está logueado te redirige
     if request.method == 'POST':
         form = SignupUsuarioForm(request.POST)
         if form.is_valid():
             usuario = form.save()
+            Coche.objects.create(
+                usuario=usuario,
+                marca='*',      
+                modelo='Por definir',
+                año=2025,            
+                motor='Por definir',
+                combustible='*'
+            )
             login(request, usuario)
             return redirect('registros')  # Redirige a la vista de registros después del login
     else:
@@ -19,6 +29,9 @@ def signup_view(request):
     return render(request, 'principal/signup.html', {'form': form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('registros')  # si ya está logueado te redirige
+    
     if request.method == 'POST':
         usuario = request.POST.get('usuario')
         password = request.POST.get('password')
@@ -31,7 +44,6 @@ def login_view(request):
         if user is not None:
             print(f"juan existe: {usuario}")
             login(request, user)  # Autenticación y login exitoso
-
             next_url = request.GET.get('next', 'registros')
             return redirect(next_url)
         else:

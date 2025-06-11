@@ -43,7 +43,7 @@ CREATE TABLE coches (
     modelo VARCHAR(100) NOT NULL,
     año INT CHECK (año BETWEEN 1900 AND 2025),
     motor VARCHAR(100),
-    combustible VARCHAR(10) CHECK (combustible IN ('gasolina', 'diesel')),
+    combustible VARCHAR(10) CHECK (combustible IN ('gasolina', 'diesel', '*')),
     usuario_id INTEGER UNIQUE NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     
@@ -62,7 +62,7 @@ CREATE TABLE coches (
         'Rivian', 'Ariel', 'Pagani', 'Spyker', 'Noble', 'De Tomaso', 'Saleen', 'Pininfarina',
         'SSC North America', 'Gumpert', 'Aptera', 'Bollinger Motors', 'Canoo', 'VinFast', 'Zenos',
         'Faraday Future', 'Rezvani', 'W Motors', 'TVR', 'Brilliance Auto', 'Luxgen', 'Togg',
-        'Donkervoort', 'Hispano Suiza', 'Ginetta'
+        'Donkervoort', 'Hispano Suiza', 'Ginetta', '*'
     ))
 );
 

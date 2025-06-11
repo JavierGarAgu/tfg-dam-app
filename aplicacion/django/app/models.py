@@ -73,12 +73,13 @@ class Registro(models.Model):
 
 class Coche(models.Model):
     COMBUSTIBLE_CHOICES = [
+        ('*', '*'),
         ('gasolina', 'Gasolina'),
         ('diesel', 'Diésel'),
     ]
 
     MARCAS_CHOICES = [
-        ('Toyota', 'Toyota'), ('Ford', 'Ford'), ('Volkswagen', 'Volkswagen'), ('Honda', 'Honda'),
+        ('Toyota', 'Toyota'), ('*', '*'), ('Ford', 'Ford'), ('Volkswagen', 'Volkswagen'), ('Honda', 'Honda'),
         ('Chevrolet', 'Chevrolet'), ('Nissan', 'Nissan'), ('BMW', 'BMW'), ('Mercedes-Benz', 'Mercedes-Benz'),
         ('Audi', 'Audi'), ('Hyundai', 'Hyundai'), ('Kia', 'Kia'), ('Peugeot', 'Peugeot'),
         ('Renault', 'Renault'), ('Fiat', 'Fiat'), ('Skoda', 'Skoda'), ('SEAT', 'SEAT'),

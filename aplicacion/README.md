@@ -41,7 +41,7 @@ pip install psycopg2-binary
 activamos migraciones
 
 ```bash
-python manage.py makemigrations principal
+python manage.py makemigrations app
 ```
 
 arrancamos para ver que funcione
@@ -50,6 +50,10 @@ arrancamos para ver que funcione
 python manage.py runserver
 ```
 
-NEXT TODO ARREGLAR http://127.0.0.1:8000/login/?next=/registros/ meter los registros y eso
+para crear requirements
+
+```bash
+pip freeze > requirements.txt
+```
 
 

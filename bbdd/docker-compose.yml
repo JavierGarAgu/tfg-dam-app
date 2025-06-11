@@ -1,14 +1,21 @@
 services:
-  db:
-    image: postgres:14
-    container_name: django_postgres_db
-    restart: always
+
+  web:
+    image: miapp-django
     environment:
+      POSTGRES_DB: usuarios_db
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: usuarios_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    depends_on:
+      - db
+    expose:
+      - "8000"
 
+  nginx:
+    image: miapp-nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"

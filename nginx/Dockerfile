@@ -2,4 +2,4 @@
 FROM nginx:alpine
 
 # copiamos el archivo de configuración al lugar que nginx espera
-COPY ../nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./default.conf /etc/nginx/conf.d/default.conf

@@ -4,15 +4,15 @@ CREATE TABLE usuarios (
     usuario VARCHAR(50) UNIQUE NOT NULL,  -- El campo 'usuario' para identificar al usuario
     password VARCHAR(100) NOT NULL,       -- Contraseña (almacenada como hash seguro)
     
-    -- Campos adicionales para completar la autenticación
+    -- Campos adicionales para completar la autenticacion
     is_active BOOLEAN DEFAULT TRUE,       -- Usuario activo (por defecto True)
     is_staff BOOLEAN DEFAULT FALSE,       -- ¿Es personal administrativo? (por defecto False)
     is_superuser BOOLEAN DEFAULT FALSE,   -- ¿Es superusuario? (por defecto False)
     
     -- Campos adicionales
-    last_login TIMESTAMP,                 -- Último inicio de sesión
-    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha en que el usuario se creó
-    email VARCHAR(255) UNIQUE,            -- Correo electrónico del usuario (opcional)
+    last_login TIMESTAMP,                 -- ultimo inicio de sesion
+    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha en que el usuario se creo
+    email VARCHAR(255) UNIQUE,            -- Correo electronico del usuario (opcional)
     
     CONSTRAINT email_check CHECK (email IS NULL OR email != '')
 );
@@ -47,7 +47,7 @@ CREATE TABLE coches (
     usuario_id INTEGER UNIQUE NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     
-    -- Validación básica para marcas populares (puedes omitir o ampliar esto según motor)
+    -- Validacion básica para marcas populares (puedes omitir o ampliar esto segun motor)
     CHECK (marca IN (
         'Toyota', 'Ford', 'Volkswagen', 'Honda', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz', 'Audi',
         'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Fiat', 'Skoda', 'SEAT', 'Mazda', 'Subaru', 'Mitsubishi',
@@ -79,13 +79,13 @@ INSERT INTO datos (tipo_registro, kilometraje, precio, fecha, detalles, usuario_
 
 -- Insertar datos para el usuario 'maria' (id = 2)
 INSERT INTO datos (tipo_registro, kilometraje, precio, fecha, detalles, usuario_id) VALUES
-('mantenimiento', 10000, 180.00, '2024-11-05', 'Revisión general', 2),
+('mantenimiento', 10000, 180.00, '2024-11-05', 'Revision general', 2),
 ('averia', 11000, 320.00, '2025-02-10', 'Problema en la caja de cambios', 2),
 ('consumo', 11500, 55.00, '2025-03-01', 'Repostaje en autopista', 2);
 
 -- Insertar coche para Juan (usuario_id = 1)
 INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES
-('Toyota', 'Corolla', 2020, '1.8L Híbrido', 'gasolina', 1);
+('Toyota', 'Corolla', 2020, '1.8L Hibrido', 'gasolina', 1);
 
 -- Insertar coche para Maria (usuario_id = 2)
 INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES

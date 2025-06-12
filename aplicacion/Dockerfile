@@ -9,6 +9,7 @@ WORKDIR /django
 # Variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=app.settings
 
 # Actualizar pip
 RUN pip install --upgrade pip

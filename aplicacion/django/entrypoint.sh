@@ -21,6 +21,7 @@ echo "La base de datos está lista. Aplicando migraciones"
 python manage.py makemigrations app
 
 echo "Levantando Gunicorn"
+export DJANGO_SETTINGS_MODULE=app.settings
 exec gunicorn app.wsgi:application \
     --bind 0.0.0.0:8000 \
     --workers 4

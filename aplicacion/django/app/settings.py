@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-x2ggj#&7-9faikspxm*=#zgmv7h)xgbhqbjd6j6#exrtmf0_36
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+USE_X_FORWARDED_HOST = True
 
 # Application definition
 

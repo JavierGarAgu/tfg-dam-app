@@ -16,7 +16,7 @@ def signup_view(request):
             usuario = form.save()
             Coche.objects.create(
                 usuario=usuario,
-                marca='*',      
+                marca='Toyota',      
                 modelo='Por definir',
                 año=2025,            
                 motor='Por definir',

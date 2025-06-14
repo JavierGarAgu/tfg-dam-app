@@ -20,7 +20,7 @@ def signup_view(request):
                 modelo='Por definir',
                 año=2025,            
                 motor='Por definir',
-                combustible='*'
+                combustible='gasolina'
             )
             login(request, usuario)
             return redirect('registros')  # Redirige a la vista de registros después del login

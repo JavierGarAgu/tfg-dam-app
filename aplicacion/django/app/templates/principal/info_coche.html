@@ -161,12 +161,12 @@
         {% for coche in coches %}
             <li>
                 <div class="registro-tipo">
-                    <span>{{ coche.marca }} {{ coche.modelo }}</span>
+                    <span>{{ coche.brand }} {{ coche.model }}</span>
                 </div>
                 <div class="registro-info">
-                    Año: {{ coche.año }}<br>
-                    Motor: {{ coche.motor }}<br>
-                    Combustible: {{ coche.get_combustible_display }}
+                    year: {{ coche.year }}<br>
+                    engine: {{ coche.engine }}<br>
+                    fuel: {{ coche.get_fuel_display }}
                 </div>
 
                 <i class="fas fa-pencil-alt edit-icon" title="Editar coche" onclick="editarRegistro(this)"></i>
@@ -176,29 +176,29 @@
                     <input type="hidden" name="id" value="{{ coche.id }}">
 
                     <div class="editable editable-block">
-                        <select name="marca">
-                            {% for key, val in coche.MARCAS_CHOICES %}
-                                <option value="{{ key }}" {% if coche.marca == key %}selected{% endif %}>{{ val }}</option>
+                        <select name="brand">
+                            {% for key, val in coche.brandS_CHOICES %}
+                                <option value="{{ key }}" {% if coche.brand == key %}selected{% endif %}>{{ val }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="text" name="modelo" value="{{ coche.modelo }}">
+                        <input type="text" name="model" value="{{ coche.model }}">
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="number" name="año" value="{{ coche.año }}">
+                        <input type="number" name="year" value="{{ coche.year }}">
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="text" name="motor" value="{{ coche.motor }}">
+                        <input type="text" name="engine" value="{{ coche.engine }}">
                     </div>
 
                     <div class="editable editable-block">
-                        <select name="combustible">
-                            <option value="gasolina" {% if coche.combustible == 'gasolina' %}selected{% endif %}>Gasolina</option>
-                            <option value="diesel" {% if coche.combustible == 'diesel' %}selected{% endif %}>Diésel</option>
+                        <select name="fuel">
+                            <option value="gasolina" {% if coche.fuel == 'gasolina' %}selected{% endif %}>Gasolina</option>
+                            <option value="diesel" {% if coche.fuel == 'diesel' %}selected{% endif %}>Diésel</option>
                         </select>
                     </div>
 

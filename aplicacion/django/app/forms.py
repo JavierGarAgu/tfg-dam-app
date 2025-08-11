@@ -1,18 +1,18 @@
 from django import forms
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100, label="Usuario")
+    username = forms.CharField(max_length=100, label="User")
     password = forms.CharField(widget=forms.PasswordInput, label="Contraseña")
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Usuario
+from .models import User
 
-class SignupUsuarioForm(UserCreationForm):
+class SignupUserForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='Opcional')
 
     class Meta:
-        model = Usuario
-        fields = ['usuario', 'email', 'password1', 'password2']
+        model = User
+        fields = ['user', 'email', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

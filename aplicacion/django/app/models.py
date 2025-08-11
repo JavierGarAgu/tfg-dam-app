@@ -2,26 +2,26 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 # ------------------------
-# 1. Usuario
+# 1. User
 # ------------------------
 
-class UsuarioManager(BaseUserManager):
-    def create_user(self, usuario, password=None, **extra_fields):
-        if not usuario:
-            raise ValueError('El usuario debe tener un nombre')
-        user = self.model(usuario=usuario, **extra_fields)
+class UserManager(BaseUserManager):
+    def create_user(self, user, password=None, **extra_fields):
+        if not user:
+            raise ValueError('El user debe tener un nombre')
+        user = self.model(user=user, **extra_fields)
         if password:
             user.set_password(password)  # Usar el método set_password para hashear la contraseña
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, usuario, password=None, **extra_fields):
+    def create_superuser(self, user, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(usuario, password, **extra_fields)
+        return self.create_user(user, password, **extra_fields)
 
-class Usuario(AbstractBaseUser, PermissionsMixin):
-    usuario = models.CharField(max_length=50, unique=True)
+class User(AbstractBaseUser, PermissionsMixin):
+    user = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -32,16 +32,16 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     # Aquí no es necesario poner un campo "password", ya que AbstractBaseUser ya lo define internamente
     # El campo 'password' se maneja automáticamente por Django, no es necesario declararlo.
 
-    USERNAME_FIELD = 'usuario'
+    USERNAME_FIELD = 'user'
     REQUIRED_FIELDS = ['email']
 
-    objects = UsuarioManager()
+    objects = UserManager()
 
     class Meta:
-        db_table = 'usuarios'
+        db_table = 'users'
 
     def __str__(self):
-        return f"Usuario(id={self.id}, usuario='{self.usuario}', email='{self.email}', staff={self.is_staff}, superuser={self.is_superuser}, activo={self.is_active})"
+        return f"User(id={self.id}, user='{self.user}', email='{self.email}', staff={self.is_staff}, superuser={self.is_superuser}, activo={self.is_active})"
 
 
 # ------------------------
@@ -49,36 +49,36 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 # ------------------------
 
 class Registro(models.Model):
-    TIPO_CHOICES = [
+    TYPE_CHOICES = [
         ('mantenimiento', 'Mantenimiento'),
         ('averia', 'Avería'),
         ('consumo', 'Consumo'),
     ]
 
-    tipo_registro = models.CharField(max_length=20, choices=TIPO_CHOICES)
-    kilometraje = models.PositiveIntegerField()
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    fecha = models.DateField()
-    detalles = models.TextField()
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='usuario_id')
+    registry_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    mileage = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    details = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id')
 
     class Meta:
         db_table = 'datos'
 
     def __str__(self):
-        return f"Registro(id={self.id}, tipo='{self.tipo_registro}', km={self.kilometraje}, usuario='{self.usuario.usuario}')"
+        return f"Registro(id={self.id}, tipo='{self.registry_type}', km={self.mileage}, user='{self.user.user}')"
 # ------------------------
 # 3. Coche
 # ------------------------
 
 class Coche(models.Model):
-    COMBUSTIBLE_CHOICES = [
+    FUEL_CHOICES = [
         ('*', '*'),
         ('gasolina', 'Gasolina'),
         ('diesel', 'Diésel'),
     ]
 
-    MARCAS_CHOICES = [
+    BRANDS_CHOICES = [
         ('Toyota', 'Toyota'), ('*', '*'), ('Ford', 'Ford'), ('Volkswagen', 'Volkswagen'), ('Honda', 'Honda'),
         ('Chevrolet', 'Chevrolet'), ('Nissan', 'Nissan'), ('BMW', 'BMW'), ('Mercedes-Benz', 'Mercedes-Benz'),
         ('Audi', 'Audi'), ('Hyundai', 'Hyundai'), ('Kia', 'Kia'), ('Peugeot', 'Peugeot'),
@@ -93,33 +93,33 @@ class Coche(models.Model):
         ('Citroën', 'Citroën'), ('DS Automobiles', 'DS Automobiles'), ('Genesis', 'Genesis'),
         ('Infiniti', 'Infiniti'), ('Acura', 'Acura'), ('Daihatsu', 'Daihatsu'), ('Proton', 'Proton'),
         ('Perodua', 'Perodua'), ('Geely', 'Geely'), ('Chery', 'Chery'), ('BYD', 'BYD'),
-        ('NIO', 'NIO'), ('Xpeng', 'Xpeng'), ('Li Auto', 'Li Auto'), ('Great Wall Motors', 'Great Wall Motors'),
+        ('NIO', 'NIO'), ('Xpeng', 'Xpeng'), ('Li Auto', 'Li Auto'), ('Great Wall engines', 'Great Wall engines'),
         ('Haval', 'Haval'), ('BAIC', 'BAIC'), ('FAW', 'FAW'), ('Hongqi', 'Hongqi'),
         ('Roewe', 'Roewe'), ('MG (Morris Garages)', 'MG (Morris Garages)'), ('Lancia', 'Lancia'),
-        ('Dacia', 'Dacia'), ('Tata Motors', 'Tata Motors'), ('Mahindra', 'Mahindra'),
+        ('Dacia', 'Dacia'), ('Tata engines', 'Tata engines'), ('Mahindra', 'Mahindra'),
         ('Maruti Suzuki', 'Maruti Suzuki'), ('Scion', 'Scion'), ('Pontiac', 'Pontiac'),
         ('Saturn', 'Saturn'), ('Hummer', 'Hummer'), ('Daewoo', 'Daewoo'), ('Oldsmobile', 'Oldsmobile'),
         ('Isuzu', 'Isuzu'), ('Suzuki', 'Suzuki'), ('Yugo', 'Yugo'), ('Zastava', 'Zastava'),
-        ('Koenigsegg', 'Koenigsegg'), ('Rimac', 'Rimac'), ('Fisker', 'Fisker'), ('Lucid Motors', 'Lucid Motors'),
+        ('Koenigsegg', 'Koenigsegg'), ('Rimac', 'Rimac'), ('Fisker', 'Fisker'), ('Lucid engines', 'Lucid engines'),
         ('Polestar', 'Polestar'), ('Rivian', 'Rivian'), ('Ariel', 'Ariel'), ('Pagani', 'Pagani'),
         ('Spyker', 'Spyker'), ('Noble', 'Noble'), ('De Tomaso', 'De Tomaso'), ('Saleen', 'Saleen'),
         ('Pininfarina', 'Pininfarina'), ('SSC North America', 'SSC North America'), ('Gumpert', 'Gumpert'),
-        ('Aptera', 'Aptera'), ('Bollinger Motors', 'Bollinger Motors'), ('Canoo', 'Canoo'),
+        ('Aptera', 'Aptera'), ('Bollinger engines', 'Bollinger engines'), ('Canoo', 'Canoo'),
         ('VinFast', 'VinFast'), ('Zenos', 'Zenos'), ('Faraday Future', 'Faraday Future'),
-        ('Rezvani', 'Rezvani'), ('W Motors', 'W Motors'), ('TVR', 'TVR'), ('Brilliance Auto', 'Brilliance Auto'),
+        ('Rezvani', 'Rezvani'), ('W engines', 'W engines'), ('TVR', 'TVR'), ('Brilliance Auto', 'Brilliance Auto'),
         ('Luxgen', 'Luxgen'), ('Togg', 'Togg'), ('Donkervoort', 'Donkervoort'),
         ('Hispano Suiza', 'Hispano Suiza'), ('Ginetta', 'Ginetta')
     ]
 
-    marca = models.CharField(max_length=50, choices=MARCAS_CHOICES)
-    modelo = models.CharField(max_length=100)
-    año = models.PositiveIntegerField(db_column='año')
-    motor = models.CharField(max_length=100)
-    combustible = models.CharField(max_length=10, choices=COMBUSTIBLE_CHOICES)
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, db_column='usuario_id')
+    brand = models.CharField(max_length=50, choices=BRANDS_CHOICES)
+    model = models.CharField(max_length=100)
+    year = models.PositiveIntegerField(db_column='year')
+    engine = models.CharField(max_length=100)
+    fuel = models.CharField(max_length=10, choices=FUEL_CHOICES)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, db_column='user_id')
 
     class Meta:
         db_table = 'coches'
 
     def __str__(self):
-        return f"Coche({self.marca} {self.modelo}, {self.año}) de {self.usuario.usuario}"
+        return f"Coche({self.brand} {self.model}, {self.year}) de {self.user.user}"

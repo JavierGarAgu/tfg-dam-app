@@ -236,11 +236,11 @@
 
     <div class="coche-info">
         <h3>Mi Coche</h3>
-        <p><strong>Marca:</strong> {{ coche.marca }}</p>
-        <p><strong>Modelo:</strong> {{ coche.modelo }}</p>
-        <p><strong>Año:</strong> {{ coche.año }}</p>
-        <p><strong>Motor:</strong> {{ coche.motor }}</p>
-        <p><strong>Combustible:</strong> {{ coche.combustible }}</p>
+        <p><strong>brand:</strong> {{ coche.brand }}</p>
+        <p><strong>model:</strong> {{ coche.model }}</p>
+        <p><strong>year:</strong> {{ coche.year }}</p>
+        <p><strong>engine:</strong> {{ coche.engine }}</p>
+        <p><strong>fuel:</strong> {{ coche.fuel }}</p>
     </div>
 
     <h2>Mis Registros</h2>
@@ -249,13 +249,13 @@
         {% for registro in registros %}
             <li>
                 <div class="registro-tipo">
-                    <span>{{ registro.tipo_registro }}</span>
+                    <span>{{ registro.registry_type }}</span>
                 </div>
                 <div class="registro-info">
-                    Kilometraje: <span>{{ registro.kilometraje }} km</span><br>
-                    Precio: <span>{{ registro.precio }} €</span><br>
-                    Fecha: <span>{{ registro.fecha }}</span><br>
-                    Detalles: <span>{{ registro.detalles }}</span>
+                    Kilometraje: <span>{{ registro.mileage }} km</span><br>
+                    Precio: <span>{{ registro.price }} €</span><br>
+                    Fecha: <span>{{ registro.date }}</span><br>
+                    Detalles: <span>{{ registro.details }}</span>
                 </div>
 
                 <i class="fas fa-pencil-alt edit-icon" title="Editar registro" onclick="editarRegistro(this)"></i>
@@ -266,27 +266,27 @@
                     <input type="hidden" name="id" value="{{ registro.id }}">
 
                     <div class="editable editable-block">
-                        <select name="tipo_registro" class="editable">
-                            <option value="mantenimiento" {% if registro.tipo_registro == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
-                            <option value="averia" {% if registro.tipo_registro == 'averia' %}selected{% endif %}>Avería</option>
-                            <option value="consumo" {% if registro.tipo_registro == 'consumo' %}selected{% endif %}>Consumo</option>
+                        <select name="registry_type" class="editable">
+                            <option value="mantenimiento" {% if registro.registry_type == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                            <option value="averia" {% if registro.registry_type == 'averia' %}selected{% endif %}>Avería</option>
+                            <option value="consumo" {% if registro.registry_type == 'consumo' %}selected{% endif %}>Consumo</option>
                         </select>
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="number" name="kilometraje" value="{{ registro.kilometraje }}" class="editable">
+                        <input type="number" name="mileage" value="{{ registro.mileage }}" class="editable">
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="text" name="precio" value="{{ registro.precio }}" class="editable" pattern="^\d+([,]\d{1,2})?$" title="Introduce un número decimal válido (por ejemplo: 123.45 o 123,45)">
+                        <input type="text" name="price" value="{{ registro.price }}" class="editable" pattern="^\d+([,]\d{1,2})?$" title="Introduce un número decimal válido (por ejemplo: 123.45 o 123,45)">
                         <div class="error">Introduce un número decimal válido (ej: 123,45)</div>
                     </div>
 
                     <div class="editable editable-block">
-                        <input type="date" name="fecha" value="{{ registro.fecha|date:'Y-m-d' }}" class="editable">
+                        <input type="date" name="date" value="{{ registro.date|date:'Y-m-d' }}" class="editable">
                     </div>
                     <div class="editable editable-block">
-                        <textarea name="detalles" class="editable">{{ registro.detalles }}</textarea>
+                        <textarea name="details" class="editable">{{ registro.details }}</textarea>
                     </div>
 
                     <div class="buttons-container">
@@ -367,14 +367,14 @@
         }
 
         function validarPrecio(formulario) {
-            var precioInput = formulario.querySelector('input[name="precio"]');
+            var priceInput = formulario.querySelector('input[name="price"]');
             var errorMsg = formulario.querySelector('.error');
-            var valor = precioInput.value.trim();
+            var valor = priceInput.value.trim();
             var regex = /^\d+([.,]\d{1,2})?$/;
 
             if (!regex.test(valor)) {
                 errorMsg.style.display = 'block';
-                precioInput.focus();
+                priceInput.focus();
                 return false;
             }
 

@@ -124,26 +124,26 @@
         <form method="POST" onsubmit="return validarPrecio(this)">
             {% csrf_token %}
 
-            <label for="tipo_registro">Tipo de Registro</label>
-            <select name="tipo_registro" id="tipo_registro" required>
+            <label for="registry_type">Tipo de Registro</label>
+            <select name="registry_type" id="registry_type" required>
                 <option value="">-- Selecciona --</option>
                 <option value="mantenimiento">Mantenimiento</option>
                 <option value="averia">Avería</option>
                 <option value="consumo">Consumo</option>
             </select>
 
-            <label for="kilometraje">Kilometraje</label>
-            <input type="number" name="kilometraje" required>
+            <label for="mileage">Kilometraje</label>
+            <input type="number" name="mileage" required>
 
-            <label for="precio">Precio (€)</label>
-            <input type="text" name="precio" required>
-            <div class="error">Por favor, ingresa un precio válido (por ejemplo: 100.50 o 100,50).</div>
+            <label for="price">Precio (€)</label>
+            <input type="text" name="price" required>
+            <div class="error">Por favor, ingresa un price válido (por ejemplo: 100.50 o 100,50).</div>
 
-            <label for="fecha">Fecha</label>
-            <input type="date" name="fecha" required>
+            <label for="date">Fecha</label>
+            <input type="date" name="date" required>
 
-            <label for="detalles">Detalles</label>
-            <textarea name="detalles" rows="4" required></textarea>
+            <label for="details">Detalles</label>
+            <textarea name="details" rows="4" required></textarea>
 
             <button type="submit">Guardar Registro</button>
             
@@ -156,19 +156,19 @@
 
     <script>
         function validarPrecio(formulario) {
-            var precioInput = formulario.querySelector('input[name="precio"]');
+            var priceInput = formulario.querySelector('input[name="price"]');
             var errorMsg = formulario.querySelector('.error');
-            var valor = precioInput.value.trim();
+            var valor = priceInput.value.trim();
             var regex = /^\d+([.,]\d{1,2})?$/;
 
-            // Validación del precio
+            // Validación del price
             if (!regex.test(valor)) {
                 errorMsg.style.display = 'block';
-                precioInput.focus();
-                return false; // Evita el envío del formulario si el precio no es válido
+                priceInput.focus();
+                return false; // Evita el envío del formulario si el price no es válido
             }
 
-            // Si el precio es válido
+            // Si el price es válido
             errorMsg.style.display = 'none';
             return true; // Permite que el formulario se envíe
         }

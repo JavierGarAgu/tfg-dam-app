@@ -1,54 +1,54 @@
--- Crear tabla de usuarios
-CREATE TABLE usuarios (
+-- Create table of users
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    usuario VARCHAR(50) UNIQUE NOT NULL,  -- El campo 'usuario' para identificar al usuario
-    password VARCHAR(100) NOT NULL,       -- Contraseña (almacenada como hash seguro)
+    user VARCHAR(50) UNIQUE NOT NULL,  -- Field 'user' to identify the user
+    password VARCHAR(100) NOT NULL,        -- Password (stored as secure hash)
     
-    -- Campos adicionales para completar la autenticacion
-    is_active BOOLEAN DEFAULT TRUE,       -- Usuario activo (por defecto True)
-    is_staff BOOLEAN DEFAULT FALSE,       -- ¿Es personal administrativo? (por defecto False)
-    is_superuser BOOLEAN DEFAULT FALSE,   -- ¿Es superusuario? (por defecto False)
+    -- Additional fields for authentication
+    is_active BOOLEAN DEFAULT TRUE,        -- Active user (default True)
+    is_staff BOOLEAN DEFAULT FALSE,        -- Is administrative staff? (default False)
+    is_superuser BOOLEAN DEFAULT FALSE,    -- Is superuser? (default False)
     
-    -- Campos adicionales
-    last_login TIMESTAMP,                 -- ultimo inicio de sesion
-    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha en que el usuario se creo
-    email VARCHAR(255) UNIQUE,            -- Correo electronico del usuario (opcional)
+    -- Additional fields
+    last_login TIMESTAMP,                  -- Last login time
+    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Date the user was created
+    email VARCHAR(255) UNIQUE,              -- User's email address (optional)
     
     CONSTRAINT email_check CHECK (email IS NULL OR email != '')
 );
 
--- Crear tabla de sesiones (django_session)
+-- Create table for sessions (django_session)
 CREATE TABLE django_session (
     session_key VARCHAR(40) PRIMARY KEY,
     session_data TEXT NOT NULL,
     expire_date TIMESTAMP NOT NULL
 );
 
--- Crear tabla de datos
-CREATE TABLE datos (
+-- Create table for records
+CREATE TABLE records (
     id SERIAL PRIMARY KEY,
-    tipo_registro VARCHAR(20) CHECK (tipo_registro IN ('mantenimiento', 'averia', 'consumo')) NOT NULL,
-    kilometraje INTEGER NOT NULL,
-    precio DECIMAL(10, 2),
-    fecha DATE NOT NULL,
-    detalles TEXT,
-    usuario_id INTEGER NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    registry_type VARCHAR(20) CHECK (registry_type IN ('maintenance', 'breakdown', 'consumption')) NOT NULL,
+    mileage INTEGER NOT NULL,
+    price DECIMAL(10, 2),
+    date DATE NOT NULL,
+    details TEXT,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Crear tabla de coches
-CREATE TABLE coches (
+-- Create table for cars
+CREATE TABLE cars (
     id SERIAL PRIMARY KEY,
-    marca VARCHAR(50) NOT NULL,
-    modelo VARCHAR(100) NOT NULL,
-    año INT CHECK (año BETWEEN 1900 AND 2025),
-    motor VARCHAR(100),
-    combustible VARCHAR(10) CHECK (combustible IN ('gasolina', 'diesel', '*')),
-    usuario_id INTEGER UNIQUE NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    year INT CHECK (year BETWEEN 1900 AND 2025),
+    engine VARCHAR(100),
+    fuel VARCHAR(10) CHECK (fuel IN ('gasoline', 'diesel', '*')),
+    user_id INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    -- Validacion básica para marcas populares (puedes omitir o ampliar esto segun motor)
-    CHECK (marca IN (
+    -- Basic validation for popular brands (can be omitted or extended as needed)
+    CHECK (brand IN (
         'Toyota', 'Ford', 'Volkswagen', 'Honda', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz', 'Audi',
         'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Fiat', 'Skoda', 'SEAT', 'Mazda', 'Subaru', 'Mitsubishi',
         'Tesla', 'Volvo', 'Jeep', 'Dodge', 'Ram', 'Chrysler', 'Buick', 'Cadillac', 'Lincoln', 'GMC',
@@ -66,27 +66,27 @@ CREATE TABLE coches (
     ))
 );
 
--- Insertar usuarios de prueba con contraseñas hasheadas
-INSERT INTO usuarios (usuario, password, is_active, is_staff, is_superuser, email) VALUES
-('juan', 'pbkdf2_sha256$1000000$tPElqMILDAAjL5e8boLnGe$e3K/g85W217Af31g9lwWvRHXr0vvDDOfd1+ZyBSlHno=', TRUE, FALSE, FALSE, 'juan@correo.com'),
-('maria', 'pbkdf2_sha256$1000000$o28NgNUIGi9HEHiDWxuQpe$I8ZxxR8ogNPFA8mTlicaBiFABAXiJEASyrXWIGbDrG8=', TRUE, FALSE, FALSE, 'maria@correo.com');
+-- Insert test users with hashed passwords
+INSERT INTO users (username, password, is_active, is_staff, is_superuser, email) VALUES
+('juan', 'pbkdf2_sha256$1000000$tPElqMILDAAjL5e8boLnGe$e3K/g85W217Af31g9lwWvRHXr0vvDDOfd1+ZyBSlHno=', TRUE, FALSE, FALSE, 'juan@email.com'),
+('maria', 'pbkdf2_sha256$1000000$o28NgNUIGi9HEHiDWxuQpe$I8ZxxR8ogNPFA8mTlicaBiFABAXiJEASyrXWIGbDrG8=', TRUE, FALSE, FALSE, 'maria@email.com');
 
--- Insertar datos para el usuario 'juan' (id = 1)
-INSERT INTO datos (tipo_registro, kilometraje, precio, fecha, detalles, usuario_id) VALUES
-('mantenimiento', 12000, 250.00, '2024-10-15', 'Cambio de aceite y filtro', 1),
-('averia', 13500, 400.00, '2024-12-01', 'Fallo en el sistema de frenos', 1),
-('consumo', 14000, 60.00, '2025-01-20', 'Llenado de combustible', 1);
+-- Insert records for user 'juan' (id = 1)
+INSERT INTO records (registry_type, mileage, price, date, details, user_id) VALUES
+('maintenance', 12000, 250.00, '2024-10-15', 'Oil and filter change', 1),
+('breakdown', 13500, 400.00, '2024-12-01', 'Brake system failure', 1),
+('consumption', 14000, 60.00, '2025-01-20', 'Fuel fill-up', 1);
 
--- Insertar datos para el usuario 'maria' (id = 2)
-INSERT INTO datos (tipo_registro, kilometraje, precio, fecha, detalles, usuario_id) VALUES
-('mantenimiento', 10000, 180.00, '2024-11-05', 'Revision general', 2),
-('averia', 11000, 320.00, '2025-02-10', 'Problema en la caja de cambios', 2),
-('consumo', 11500, 55.00, '2025-03-01', 'Repostaje en autopista', 2);
+-- Insert records for user 'maria' (id = 2)
+INSERT INTO records (registry_type, mileage, price, date, details, user_id) VALUES
+('maintenance', 10000, 180.00, '2024-11-05', 'General inspection', 2),
+('breakdown', 11000, 320.00, '2025-02-10', 'Transmission problem', 2),
+('consumption', 11500, 55.00, '2025-03-01', 'Highway refueling', 2);
 
--- Insertar coche para Juan (usuario_id = 1)
-INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES
-('Toyota', 'Corolla', 2020, '1.8L Hibrido', 'gasolina', 1);
+-- Insert car for Juan (user_id = 1)
+INSERT INTO cars (brand, model, year, engine, fuel, user_id) VALUES
+('Toyota', 'Corolla', 2020, '1.8L Hybrid', 'gasoline', 1);
 
--- Insertar coche para Maria (usuario_id = 2)
-INSERT INTO coches (marca, modelo, año, motor, combustible, usuario_id) VALUES
+-- Insert car for Maria (user_id = 2)
+INSERT INTO cars (brand, model, year, engine, fuel, user_id) VALUES
 ('Volkswagen', 'Golf', 2019, '2.0 TDI', 'diesel', 2);

@@ -14,17 +14,17 @@ ENV DJANGO_SETTINGS_MODULE=app.settings
 # Actualizar pip
 RUN pip install --upgrade pip
 
-# Copiar y dar permisos
-COPY ../django/requirements.txt .
-COPY ../django/entrypoint.sh .
+# Copiar y dar permisos (⬅️ FIXED paths)
+COPY django/requirements.txt .
+COPY django/entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 # Instalar deps
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto
-COPY ../django/app ./app
-COPY ../django/manage.py .
+# Copiar el resto (⬅️ FIXED paths)
+COPY django/app ./app
+COPY django/manage.py .
 
 # Exponer y lanzar
 EXPOSE 8000

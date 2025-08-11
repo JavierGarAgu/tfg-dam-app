@@ -18,7 +18,7 @@ done
 
 echo "La base de datos está lista. Aplicando migraciones"
 
-python manage.py makemigrations app
+#python manage.py makemigrations app
 
 echo "Levantando Gunicorn"
 export DJANGO_SETTINGS_MODULE=app.settings

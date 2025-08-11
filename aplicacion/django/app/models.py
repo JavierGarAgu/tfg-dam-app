@@ -113,7 +113,7 @@ class Coche(models.Model):
 
     marca = models.CharField(max_length=50, choices=MARCAS_CHOICES)
     modelo = models.CharField(max_length=100)
-    año = models.PositiveIntegerField()
+    año = models.PositiveIntegerField(db_column='año')
     motor = models.CharField(max_length=100)
     combustible = models.CharField(max_length=10, choices=COMBUSTIBLE_CHOICES)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, db_column='usuario_id')

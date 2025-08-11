@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-x2ggj#&7-9faikspxm*=#zgmv7h)xgbhqbjd6j6#exrtmf0_36
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-USE_X_FORWARDED_HOST = True
+#CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8080']
 
 # Application definition
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'

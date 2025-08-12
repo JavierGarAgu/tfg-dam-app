@@ -1,18 +1,18 @@
 -- Create table of users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    user VARCHAR(50) UNIQUE NOT NULL,  -- Field 'user' to identify the user
+    username VARCHAR(50) UNIQUE NOT NULL,  -- Changed from 'user' to 'username'
     password VARCHAR(100) NOT NULL,        -- Password (stored as secure hash)
     
     -- Additional fields for authentication
-    is_active BOOLEAN DEFAULT TRUE,        -- Active user (default True)
-    is_staff BOOLEAN DEFAULT FALSE,        -- Is administrative staff? (default False)
-    is_superuser BOOLEAN DEFAULT FALSE,    -- Is superuser? (default False)
+    is_active BOOLEAN DEFAULT TRUE,        
+    is_staff BOOLEAN DEFAULT FALSE,        
+    is_superuser BOOLEAN DEFAULT FALSE,    
     
     -- Additional fields
-    last_login TIMESTAMP,                  -- Last login time
-    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Date the user was created
-    email VARCHAR(255) UNIQUE,              -- User's email address (optional)
+    last_login TIMESTAMP,                  
+    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    email VARCHAR(255) UNIQUE,              
     
     CONSTRAINT email_check CHECK (email IS NULL OR email != '')
 );
@@ -47,7 +47,6 @@ CREATE TABLE cars (
     user_id INTEGER UNIQUE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    -- Basic validation for popular brands (can be omitted or extended as needed)
     CHECK (brand IN (
         'Toyota', 'Ford', 'Volkswagen', 'Honda', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz', 'Audi',
         'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Fiat', 'Skoda', 'SEAT', 'Mazda', 'Subaru', 'Mitsubishi',

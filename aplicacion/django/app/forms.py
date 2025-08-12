@@ -1,7 +1,7 @@
 from django import forms
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100, label="User")
+    username = forms.CharField(max_length=100, label="Usuario")
     password = forms.CharField(widget=forms.PasswordInput, label="Contraseña")
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -12,7 +12,7 @@ class SignupUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['user', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

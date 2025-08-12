@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import Registro, User, Coche  # Asegúrate de que User es un model compatible con auth
+from .models import Record, User, Car  # Asegúrate de que User es un model compatible con auth
 from .forms import SignupUserForm
 from django.contrib import messages
 from datetime import datetime
@@ -14,13 +14,13 @@ def signup_view(request):
         form = SignupUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Coche.objects.create(
+            Car.objects.create(
                 user=user,
                 brand='Toyota',      
                 model='Por definir',
                 year=2025,            
                 engine='Por definir',
-                fuel='gasolina'
+                fuel='gasoline'
             )
             login(request, user)
             return redirect('registros')  # Redirige a la vista de registros después del login
@@ -33,13 +33,13 @@ def login_view(request):
         return redirect('registros')  # si ya está logueado te redirige
     
     if request.method == 'POST':
-        user = request.POST.get('user')
+        username = request.POST.get('username')
         password = request.POST.get('password')
 
         print(f"Intento de login: {user}")
 
         # Usar authenticate para verificar user y contraseña con hashes
-        user = authenticate(request, username=user, password=password)
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
             print(f"juan existe: {user}")
@@ -56,10 +56,10 @@ def login_view(request):
 # Vista para ver los registros del user autenticado
 @login_required
 def registros_view(request):
-    coche = Coche.objects.get(user=request.user)
+    coche = Car.objects.get(user=request.user)
     
     # Obtener los registros del user autenticado
-    registros = Registro.objects.filter(user=request.user).order_by('-date')
+    registros = Record.objects.filter(user=request.user).order_by('-date')
     
     # Pasar tanto los registros como el coche al template
     return render(request, 'principal/registros.html', {'registros': registros, 'coche': coche})
@@ -76,7 +76,7 @@ def info_coche(request):
     if request.method == 'POST':
         coche_id = request.POST.get('id')
         try:
-            coche = Coche.objects.get(id=coche_id, user=request.user)
+            coche = Car.objects.get(id=coche_id, user=request.user)
 
             coche.brand = request.POST.get('brand')
             coche.model = request.POST.get('model')
@@ -85,15 +85,15 @@ def info_coche(request):
             coche.fuel = request.POST.get('fuel')
 
             coche.save()
-            messages.success(request, "Coche actualizado exitosamente.")
+            messages.success(request, "Car actualizado exitosamente.")
             return redirect('info_coche')  # Redirige para evitar reenvío del formulario
 
-        except Coche.DoesNotExist:
+        except Car.DoesNotExist:
             messages.error(request, "No se encontró el coche.")
             return redirect('info_coche')
 
     # Si no es POST, simplemente muestra los coches
-    coches = Coche.objects.filter(user=request.user)
+    coches = Car.objects.filter(user=request.user)
     return render(request, 'principal/info_coche.html', {'coches': coches})
 
 
@@ -107,7 +107,7 @@ def nuevo_registro(request):
 
   
         price_float = float(price.replace(',', '.'))  # Convertir ',' a '.' si es necesario
-        nuevo = Registro.objects.create(
+        nuevo = Record.objects.create(
             registry_type=registry_type,
             mileage=int(mileage),
             price=price_float,
@@ -124,7 +124,7 @@ def actualizar_registro(request):
     if request.method == 'POST':
         registro_id = request.POST.get('id')
 
-        registro = Registro.objects.get(id=registro_id, user=request.user)
+        registro = Record.objects.get(id=registro_id, user=request.user)
         # Actualizamos los campos del registro
         registro.registry_type = request.POST.get('registry_type')
         registro.mileage = int(request.POST.get('mileage'))
@@ -146,9 +146,9 @@ def actualizar_registro(request):
 @login_required
 def eliminar_registro(request, id):
     try:
-        registro = Registro.objects.get(id=id, user=request.user)
+        registro = Record.objects.get(id=id, user=request.user)
         registro.delete()
-        messages.success(request, "Registro eliminado correctamente.")
-    except Registro.DoesNotExist:
+        messages.success(request, "Record eliminado correctamente.")
+    except Record.DoesNotExist:
         messages.error(request, "No se encontró el registro.")
     return redirect('registros')

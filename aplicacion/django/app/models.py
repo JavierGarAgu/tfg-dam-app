@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
         return self.create_user(user, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user = models.CharField(max_length=50, unique=True)
+    username = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Aquí no es necesario poner un campo "password", ya que AbstractBaseUser ya lo define internamente
     # El campo 'password' se maneja automáticamente por Django, no es necesario declararlo.
 
-    USERNAME_FIELD = 'user'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
     objects = UserManager()
@@ -41,14 +41,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'users'
 
     def __str__(self):
-        return f"User(id={self.id}, user='{self.user}', email='{self.email}', staff={self.is_staff}, superuser={self.is_superuser}, activo={self.is_active})"
+        return f"User(id={self.id}, username='{self.username}', email='{self.email}', staff={self.is_staff}, superuser={self.is_superuser}, activo={self.is_active})"
 
 
 # ------------------------
 # 2. Registro
 # ------------------------
 
-class Registro(models.Model):
+class Record(models.Model):
     TYPE_CHOICES = [
         ('mantenimiento', 'Mantenimiento'),
         ('averia', 'Avería'),
@@ -63,7 +63,7 @@ class Registro(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id')
 
     class Meta:
-        db_table = 'datos'
+        db_table = 'records'
 
     def __str__(self):
         return f"Registro(id={self.id}, tipo='{self.registry_type}', km={self.mileage}, user='{self.user.user}')"
@@ -71,11 +71,11 @@ class Registro(models.Model):
 # 3. Coche
 # ------------------------
 
-class Coche(models.Model):
+class Car(models.Model):
     FUEL_CHOICES = [
         ('*', '*'),
-        ('gasolina', 'Gasolina'),
-        ('diesel', 'Diésel'),
+        ('gasoline', 'gasoline'),
+        ('diesel', 'diesel'),
     ]
 
     BRANDS_CHOICES = [
@@ -119,7 +119,7 @@ class Coche(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, db_column='user_id')
 
     class Meta:
-        db_table = 'coches'
+        db_table = 'cars'
 
     def __str__(self):
-        return f"Coche({self.brand} {self.model}, {self.year}) de {self.user.user}"
+        return f"Car({self.brand} {self.model}, {self.year}) de {self.user.username}"
